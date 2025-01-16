@@ -1,0 +1,6 @@
+resources
+| where type == "microsoft.hybridcompute/machines"
+| extend esuProfile = properties.licenseProfile.esuProfile, coreCount = toint(properties.detectedProperties.coreCount)
+| where isnotempty(esuProfile) and esuProfile.licenseAssignmentState == "Assigned"
+| extend adjustedCoreCount = case(coreCount < 8, 8, coreCount)
+| project name, location, resourceGroup, adjustedCoreCount
